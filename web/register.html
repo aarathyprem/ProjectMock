@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/main.css" />
+        <script>
+            $(document).ready(function () {
+                var isValid = true;
+                $('#message').text("");
+                if ($('#username').val().trim() == "") {
+                    isValid = false;
+                    $('#message').append("Please enter username!<br />");
+                }
+                if ($('#email').val().trim() == "") {
+                    isValid = false;
+                    $('#message').append("Please enter email!<br />");
+                }
+                if ($('#password').val().trim() == "") {
+                    isValid = false;
+                    $('#message').append("Please enter password!");
+                }
+                if (isValid) {
+                    $('#login').click(function () {
+                        $.ajax({
+                            url: 'r/register',
+                            method: 'post',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                username: $('#username').val(),
+                                password: $('#password').val(),
+                                email: $('#email').val()
+                            }),
+                            success: function (data) {
+                                if (data == "true") {
+                                    $(location).attr('href', window.location.href + 'index.html');
+                                } else {
+                                    $('#message').text("user already exists!");
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <div id="page-wrapper">
+            <!-- Header -->
+            <header id="header" class="alt">
+                <h1 id="logo">Chat!</h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="index.html" class="button special">Sign In</a></li>
+                    </ul>
+                </nav>
+            </header>
+            <!-- Banner -->
+            <section id="banner">
+                <div class="inner">
+                    <header>
+                        <h2>Sign Up</h2>
+                    </header>
+                    <p><input id="username" type="text" placeholder="username" />
+                        <br />
+                        <input id="email" type="email" placeholder="email" />
+                        <br />
+                        <input id="password" type="password" placeholder="password" />
+                    </p>
+                    <footer>
+                        <ul class="buttons">
+                            <li><a href="#main" class="button fit scrolly">Register</a></li>
+                        </ul>
+                    </footer>
+                </div>
+            </section>
+            <!-- Footer -->
+            <footer id="footer">
+                <ul class="copyright">
+                    <li>&copy; Chat!</li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>

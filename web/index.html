@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/main.css" />
+        <script>
+            $(document).ready(function () {
+                $('#login').click(function () {
+                    var isValid = true;
+                    $('#message').text("");
+                    if ($('#email').val().trim() == "") {
+                        isValid = false;
+                        $('#message').append("Please enter email!<br />");
+                    }
+                    if ($('#password').val().trim() == "") {
+                        isValid = false;
+                        $('#message').append("Please enter password!");
+                    }
+                    if (isValid) {
+                        $.ajax({
+                            url: 'Login',
+                            method: 'post',
+                            data: {
+                                username: $('#email').val(),
+                                password: $('#password').val()
+                            },
+                            success: function (data) {
+                                if (data != undefined) {
+                                    $(location).attr('href', "http://localhost:8080/ProjectMock/home.html");
+                                } else {
+                                    $('#message').text("email/password incorrect!");
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body class="index">
+        <div id="page-wrapper">
+            <!-- Header -->
+            <header id="header" class="alt">
+                <h1 id="logo">Chat!</h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="#" class="button special">Sign in with <i class="fa fa-google-plus"></i></a></li>
+                        <li><a href="register.html" class="button special">Sign Up</a></li>
+                    </ul>
+                </nav>
+            </header>
+            <!-- Banner -->
+            <section id="banner">
+                <div class="inner">
+                    <header>
+                        <h2>Sign In</h2>
+                    </header>
+                    <p>
+                        <span id="message" style="color:red; font-weight: bold; float: left;">
+                        </span>
+                    </p>
+                    <p>
+                        <input id="email" type="text" placeholder="email" />
+                        <br />
+                        <input id="password" type="password" placeholder="password" />
+                    </p>
+                    <footer>
+                        <button type="submit" id="login" class="button scrolly">Login</button>
+                    </footer>
+                </div>
+            </section>
+            <!-- Footer -->
+            <footer id="footer">
+                <ul class="copyright">
+                    <li>&copy; Chat!</li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/main.css" />
+        <style>
+            div#divLeftSidebar {
+                border-right: solid 1.5px rgba(124, 128, 129, 0.2);
+                height: 100%;
+            }
+
+            .separator {
+                border-bottom: solid 1.5px rgba(124, 128, 129, 0.2);
+            }
+
+            h3 span {
+                padding-left: 32%;
+            }
+
+            .popup-container {
+                position: fixed;
+                display: none;
+            }
+        </style>
+        
+        <!-- Scripts -->
+        <script src="js/jquery.min.js"></script>
+        <script>
+            
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'Home',
+                    method: 'POST',
+                    success: function (data) {
+                        if (data != undefined) {
+                            $('#loginUser').text(data);
+                        }
+                    }
+                });
+                
+                $.ajax({
+                    url: 'Home',
+                    method: 'POST',
+                    data: { email: $('#loginUser').text() },
+                    success: function (data) {
+                        if (data != []) {
+                            var groups = data.substring(1,data.length-3).split(',');
+                            for(var i = 0; i < groups.length; i++) {
+                                $('#groups ul').append("<li>" + groups[i].trim() + "</li>");
+                            }
+                        }
+                        else {
+                            $('#groups ul').append("<li>No groups</li>");
+                        }
+                    }
+                });
+                
+                var wsUri = "ws://localhost:8080/ProjectMock/chat";
+                var websocket = new WebSocket(wsUri);
+
+                websocket.onmessage = function (evt) {
+                    if (typeof evt.data !== 'undefined') {
+                        var json = $.parseJSON(evt.data);
+                        for (var i = 0; i < json.length; i++)
+                            $("#chatwindow").append('<li><span class="timestamp">' + json[i].timestamp + '</span>' +
+                                    ' <span class="nickname">&lt;' + json[i].nickname + '&gt;</span>: ' + json[i].message + '</li>');
+                    }
+                };
+
+                websocket.onerror = function (evt) {
+                    console.log(evt.data);
+                };
+
+                function sendMessage() {
+                    var data = {
+                        "message": $('#input').val(),
+                        "username": $('#username').val(),
+                        "timestamp": new Date().toISOString()
+                    };
+                    var json = JSON.stringify(data);
+
+                    websocket.send(json);
+                    $('#input').val('');
+                }
+
+                $("#send").click(sendMessage);
+
+                // The following just captures the Enter key to send the message
+                $('#input').keypress(function (e) {
+                    if (e.which == 13) {
+                        sendMessage();
+                    }
+                });
+            });
+
+        </script>
+    </head>
+    <body class="left-sidebar">
+        <div id="page-wrapper">
+            <!-- Header -->
+            <header id="header">
+                <h1 id="logo">Chat!</h1>
+                <nav id="nav">
+                    <ul>
+                        <li id="loginUser" class="current"></li>
+                        <li><a href="index.html" class="button special">Sign out</a></li>
+                    </ul>
+                </nav>
+            </header>
+            <!-- Main -->
+            <article id="main">
+                <!-- One -->
+                <section class="wrapper style4 container">
+                    <div class="row 150%">
+                        <div id="divLeftSidebar" class="3u 12u(narrower)">
+                            <!-- Sidebar -->
+                            <div class="sidebar">
+                                <section>
+                                    <header class="separator">
+                                        <h3>Groups
+                                            <span><i class="fa fa-plus-circle" aria-hidden="true"></i></span>
+                                        </h3>
+                                    </header>
+                                    <div id="groups">
+                                        <ul></ul>
+                                    </div>
+                                </section>
+                                <!--<section>
+                                    <header>
+                                        <h3>Messages
+                                            <span id="msg" style="padding-left: 20%;"><i class="fa fa-plus-circle" aria-hidden="true"></i></span>
+                                        </h3>
+                                    </header>
+                                    <div>
+                                        <ul>
+                                            <li style="font-weight: bold;">Aarathy<i class="fa fa-comment" style="color: green; vertical-align: super;" aria-hidden="true"></i></li>
+                                            <li>Premnath</li>
+                                        </ul>
+                                    </div>									
+                                </section>-->
+                            </div>
+                        </div>
+                        <div class="6u 12u(narrower) important(narrower)">
+                            <!-- Content -->
+                            <div class="content">
+                                <section class="messages">
+                                    <header>
+                                        <h3>Group Name</h3>
+                                    </header>
+                                    <p  class="separator">description</p>
+                                    <div style="height:200px;">
+                                        <ul id="chatwindow">
+                                        </ul>
+                                    </div>
+                                </section>
+                                <footer>
+                                    <textarea id="message" placeholder="Type message here..."></textarea>
+                                    <br/>
+                                    <input type="button" id="btnSend" value="Send" class="button special" style="float: right" />
+                                </footer>
+                            </div>						
+                        </div>
+                        <div id="divRightSidebar" class="3u 12u(narrower)">
+                            <!-- Content -->
+                            <div class="sidebar">
+                                <section>
+                                    <header>
+                                        <h3>Contacts
+                                            <span><i class="fa fa-plus-circle" aria-hidden="true"></i></span>
+                                        </h3>
+                                    </header>
+                                    <p id="contacts"></p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </article>
+            <!-- Footer -->
+            <footer id="footer">
+                <ul class="copyright">
+                    <li>&copy; Chat!</li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
